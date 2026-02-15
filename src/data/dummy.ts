@@ -48,6 +48,7 @@ export interface ReelCard {
   creatorInitials: string;
   views: string;
   thumbnail: string;
+  youtubeId: string;
 }
 
 export interface MasterclassEvent {
@@ -125,11 +126,11 @@ export const knowledgeCategories: KnowledgeCategory[] = [
 ];
 
 export const reelCards: ReelCard[] = [
-  { id: "v1", title: "How I Built a ₹1Cr Startup in 6 Months", creator: "Aarav Sharma", creatorInitials: "AS", views: "12K", thumbnail: "🚀" },
-  { id: "v2", title: "3 Mistakes First-Time Founders Make", creator: "Priya Mehta", creatorInitials: "PM", views: "8.5K", thumbnail: "⚠️" },
-  { id: "v3", title: "GST Filing Hack for Startups", creator: "Vikram Patel", creatorInitials: "VP", views: "5.2K", thumbnail: "💰" },
-  { id: "v4", title: "My YC Interview Experience", creator: "Sneha Reddy", creatorInitials: "SR", views: "20K", thumbnail: "🎯" },
-  { id: "v5", title: "Building in Public: Week 1", creator: "Karan Singh", creatorInitials: "KS", views: "3.1K", thumbnail: "🔨" },
+  { id: "v1", title: "How I Built a ₹1Cr Startup in 6 Months", creator: "Aarav Sharma", creatorInitials: "AS", views: "12K", thumbnail: "🚀", youtubeId: "ZoqgAy3h4OM" },
+  { id: "v2", title: "3 Mistakes First-Time Founders Make", creator: "Priya Mehta", creatorInitials: "PM", views: "8.5K", thumbnail: "⚠️", youtubeId: "uvHnMklnWQs" },
+  { id: "v3", title: "GST Filing Hack for Startups", creator: "Vikram Patel", creatorInitials: "VP", views: "5.2K", thumbnail: "💰", youtubeId: "rUxyKA_mFeQ" },
+  { id: "v4", title: "My YC Interview Experience", creator: "Sneha Reddy", creatorInitials: "SR", views: "20K", thumbnail: "🎯", youtubeId: "PTC2JrVuKBU" },
+  { id: "v5", title: "Building in Public: Week 1", creator: "Karan Singh", creatorInitials: "KS", views: "3.1K", thumbnail: "🔨", youtubeId: "oYZShvmf9eQ" },
 ];
 
 export const masterclassEvents: MasterclassEvent[] = [
