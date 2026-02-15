@@ -14,13 +14,111 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      pitch_likes: {
+        Row: {
+          created_at: string
+          id: string
+          pitch_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          pitch_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          pitch_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pitch_likes_pitch_id_fkey"
+            columns: ["pitch_id"]
+            isOneToOne: false
+            referencedRelation: "pitches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pitches: {
+        Row: {
+          comments_count: number
+          created_at: string
+          description: string
+          id: string
+          likes_count: number
+          tags: string[] | null
+          title: string
+          trending: boolean
+          user_id: string
+        }
+        Insert: {
+          comments_count?: number
+          created_at?: string
+          description: string
+          id?: string
+          likes_count?: number
+          tags?: string[] | null
+          title: string
+          trending?: boolean
+          user_id: string
+        }
+        Update: {
+          comments_count?: number
+          created_at?: string
+          description?: string
+          id?: string
+          likes_count?: number
+          tags?: string[] | null
+          title?: string
+          trending?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          full_name: string
+          id: string
+          startup_name: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          full_name?: string
+          id?: string
+          startup_name?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          full_name?: string
+          id?: string
+          startup_name?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      decrement_likes: { Args: { pitch_id_param: string }; Returns: undefined }
+      increment_likes: { Args: { pitch_id_param: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
