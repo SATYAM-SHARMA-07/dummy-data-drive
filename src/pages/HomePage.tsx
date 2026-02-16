@@ -9,6 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import CreatePitchDialog from "@/components/CreatePitchDialog";
 import AnimatedPage from "@/components/AnimatedPage";
 import { motion } from "framer-motion";
+import CommentsSheet from "@/components/CommentsSheet";
 
 const HomePage = () => {
   const [search, setSearch] = useState("");
@@ -137,9 +138,7 @@ const HomePage = () => {
                       <Heart className={`h-4 w-4 transition-all ${liked ? "fill-primary text-primary scale-110" : ""}`} />
                       {post.likes + (liked ? 1 : 0)}
                     </button>
-                    <span className="flex items-center gap-1 text-xs">
-                      <MessageCircle className="h-4 w-4" /> {post.comments}
-                    </span>
+                    <CommentsSheet pitchId={post.id} commentsCount={post.comments} />
                   </div>
                 </Card>
               </motion.div>
