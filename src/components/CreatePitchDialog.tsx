@@ -118,7 +118,7 @@ const CreatePitchDialog = ({ onCreated }: CreatePitchDialogProps) => {
               </Button>
             </div>
             {tags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-2">
+              <div className="mt-2 flex flex-wrap gap-1.5">
                 {tags.map((tag) => (
                   <Badge key={tag} variant="secondary" className="gap-1">
                     {tag}
