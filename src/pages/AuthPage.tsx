@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -154,7 +155,12 @@ const AuthPage = () => {
         },
       });
 
-      if (error) throw error;
+      if (!error) return;
+
+      const fallback = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (fallback.error) throw fallback.error;
     } catch (error: any) {
       toast({
         title: "Error",
