@@ -3,6 +3,7 @@ import { Search, Heart, TrendingUp } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -29,6 +30,9 @@ const HomePage = () => {
   const [search, setSearch] = useState("");
   const [pitches, setPitches] = useState<Pitch[]>([]);
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
+  const [showTrendingOnly, setShowTrendingOnly] = useState(false);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<"recent" | "popular" | "discussed">("recent");
   const { user } = useAuth();
 
   const fetchPitches = async () => {
@@ -87,21 +91,42 @@ const HomePage = () => {
       return next;
     });
 
+    setPitches((prev) =>
+      prev.map((pitch) =>
+        pitch.id === pitchId
+          ? { ...pitch, likes_count: Math.max(0, pitch.likes_count + (liked ? -1 : 1)) }
+          : pitch
+      )
+    );
+
     if (liked) {
-      await supabase.from("pitch_likes").delete().eq("pitch_id", pitchId).eq("user_id", user.id);
-      await supabase.rpc("decrement_likes", { pitch_id_param: pitchId });
+      const { error } = await supabase.from("pitch_likes").delete().eq("pitch_id", pitchId).eq("user_id", user.id);
+      if (!error) await supabase.rpc("decrement_likes", { pitch_id_param: pitchId });
     } else {
-      await supabase.from("pitch_likes").insert({ pitch_id: pitchId, user_id: user.id });
-      await supabase.rpc("increment_likes", { pitch_id_param: pitchId });
+      const { error } = await supabase.from("pitch_likes").insert({ pitch_id: pitchId, user_id: user.id });
+      if (!error) await supabase.rpc("increment_likes", { pitch_id_param: pitchId });
     }
   };
 
   const trending = pitches.filter((p) => p.trending);
-  const filtered = pitches.filter(
-    (p) =>
-      p.title.toLowerCase().includes(search.toLowerCase()) ||
-      p.description.toLowerCase().includes(search.toLowerCase())
-  );
+  const topTags = [...new Set(pitches.flatMap((pitch) => pitch.tags || []))].slice(0, 8);
+
+  const filtered = pitches
+    .filter((pitch) => {
+      const searchText = search.toLowerCase();
+      const matchesSearch =
+        pitch.title.toLowerCase().includes(searchText) ||
+        pitch.description.toLowerCase().includes(searchText);
+      const matchesTag = selectedTag ? (pitch.tags || []).includes(selectedTag) : true;
+      const matchesTrending = showTrendingOnly ? pitch.trending : true;
+
+      return matchesSearch && matchesTag && matchesTrending;
+    })
+    .sort((a, b) => {
+      if (sortBy === "popular") return b.likes_count - a.likes_count;
+      if (sortBy === "discussed") return b.comments_count - a.comments_count;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
 
   const getInitials = (name?: string) =>
     name ? name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2) : "??";
@@ -125,7 +150,7 @@ const HomePage = () => {
             <Badge variant="secondary" className="gap-1">
               <TrendingUp className="h-3 w-3" /> {trending.length} Trending
             </Badge>
-            {user && <CreatePitchDialog onCreated={() => {}} />}
+            {user && <CreatePitchDialog onCreated={fetchPitches} />}
           </div>
         </div>
 
@@ -133,6 +158,73 @@ const HomePage = () => {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input placeholder="Search pitches..." className="pl-9" value={search} onChange={(e) => setSearch(e.target.value)} />
+        </div>
+
+        {/* Filters */}
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant={showTrendingOnly ? "default" : "secondary"}
+              size="sm"
+              onClick={() => setShowTrendingOnly((prev) => !prev)}
+            >
+              🔥 Trending only
+            </Button>
+            <Button
+              type="button"
+              variant={sortBy === "recent" ? "default" : "secondary"}
+              size="sm"
+              onClick={() => setSortBy("recent")}
+            >
+              Newest
+            </Button>
+            <Button
+              type="button"
+              variant={sortBy === "popular" ? "default" : "secondary"}
+              size="sm"
+              onClick={() => setSortBy("popular")}
+            >
+              Most liked
+            </Button>
+            <Button
+              type="button"
+              variant={sortBy === "discussed" ? "default" : "secondary"}
+              size="sm"
+              onClick={() => setSortBy("discussed")}
+            >
+              Most discussed
+            </Button>
+            {(search || selectedTag || showTrendingOnly || sortBy !== "recent") && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSearch("");
+                  setSelectedTag(null);
+                  setShowTrendingOnly(false);
+                  setSortBy("recent");
+                }}
+              >
+                Reset
+              </Button>
+            )}
+          </div>
+          {topTags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {topTags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => setSelectedTag((prev) => (prev === tag ? null : tag))}
+                  className="rounded-full"
+                >
+                  <Badge variant={selectedTag === tag ? "default" : "secondary"}>{tag}</Badge>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Trending */}
@@ -192,7 +284,7 @@ const HomePage = () => {
                   <div className="flex items-center gap-4 text-muted-foreground">
                     <button onClick={() => toggleLike(post.id)} className="flex items-center gap-1 text-xs transition-colors hover:text-primary">
                       <Heart className={`h-4 w-4 transition-all ${liked ? "fill-primary text-primary scale-110" : ""}`} />
-                      {post.likes_count + (liked && !likedPosts.has(post.id) ? 1 : 0)}
+                      {post.likes_count}
                     </button>
                     <CommentsSheet pitchId={post.id} commentsCount={post.comments_count} />
                   </div>
@@ -201,7 +293,7 @@ const HomePage = () => {
             );
           })}
           {filtered.length === 0 && (
-            <p className="text-center text-sm text-muted-foreground py-8">No pitches found. Be the first to post!</p>
+            <p className="text-center text-sm text-muted-foreground py-8">No pitches matched your filters yet. Try changing the search or filter options.</p>
           )}
         </div>
       </div>
