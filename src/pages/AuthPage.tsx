@@ -30,6 +30,8 @@ const AuthPage = () => {
   const { toast } = useToast();
 
   const canSubmitOtpCode = useMemo(() => otpCode.trim().length >= 6, [otpCode]);
+  const normalizedEmail = email.trim();
+  const normalizedPhone = phone.trim();
 
   const resetOtpState = () => {
     setOtpSent(false);
@@ -38,14 +40,14 @@ const AuthPage = () => {
 
   const handlePasswordAuth = async () => {
     if (isLogin) {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({ email: normalizedEmail, password });
       if (error) throw error;
       navigate("/");
       return;
     }
 
     const { error } = await supabase.auth.signUp({
-      email,
+      email: normalizedEmail,
       password,
       options: {
         data: { full_name: fullName },
@@ -63,9 +65,13 @@ const AuthPage = () => {
   const sendOtp = async () => {
     const authMeta = !isLogin ? { full_name: fullName } : undefined;
 
+    if (otpChannel === "phone" && !normalizedPhone.startsWith("+")) {
+      throw new Error("Use phone number with country code (example: +919876543210)");
+    }
+
     if (otpChannel === "email") {
       const { error } = await supabase.auth.signInWithOtp({
-        email,
+        email: normalizedEmail,
         options: {
           shouldCreateUser: !isLogin,
           emailRedirectTo: window.location.origin,
@@ -84,7 +90,7 @@ const AuthPage = () => {
     }
 
     const { error } = await supabase.auth.signInWithOtp({
-      phone,
+      phone: normalizedPhone,
       options: {
         shouldCreateUser: !isLogin,
         data: authMeta,
@@ -103,8 +109,8 @@ const AuthPage = () => {
   const verifyOtp = async () => {
     const payload =
       otpChannel === "email"
-        ? { email, token: otpCode, type: "email" as const }
-        : { phone, token: otpCode, type: "sms" as const };
+        ? { email: normalizedEmail, token: otpCode, type: "email" as const }
+        : { phone: normalizedPhone, token: otpCode, type: "sms" as const };
 
     const { error } = await supabase.auth.verifyOtp(payload);
     if (error) throw error;
