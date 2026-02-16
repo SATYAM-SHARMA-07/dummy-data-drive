@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          pitch_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          pitch_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          pitch_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_pitch_id_fkey"
+            columns: ["pitch_id"]
+            isOneToOne: false
+            referencedRelation: "pitches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pitch_likes: {
         Row: {
           created_at: string
@@ -118,6 +150,10 @@ export type Database = {
     }
     Functions: {
       decrement_likes: { Args: { pitch_id_param: string }; Returns: undefined }
+      increment_comments: {
+        Args: { pitch_id_param: string }
+        Returns: undefined
+      }
       increment_likes: { Args: { pitch_id_param: string }; Returns: undefined }
     }
     Enums: {

@@ -13,6 +13,7 @@ import EventsPage from "./pages/EventsPage";
 import ProfilePage from "./pages/ProfilePage";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
+import AIChatWidget from "./components/AIChatWidget";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ const App = () => (
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <AIChatWidget />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
