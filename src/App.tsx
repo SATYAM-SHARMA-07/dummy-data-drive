@@ -10,6 +10,8 @@ import RoadmapPage from "./pages/RoadmapPage";
 import KnowledgePage from "./pages/KnowledgePage";
 import ReelsPage from "./pages/ReelsPage";
 import EventsPage from "./pages/EventsPage";
+import MessagesPage from "./pages/MessagesPage";
+import AnalyticsPage from "./pages/AnalyticsPage";
 import ProfilePage from "./pages/ProfilePage";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
@@ -46,6 +48,8 @@ const App = () => (
               <Route path="/knowledge" element={<KnowledgePage />} />
               <Route path="/reels" element={<ReelsPage />} />
               <Route path="/events" element={<EventsPage />} />
+              <Route path="/messages" element={<MessagesPage />} />
+              <Route path="/analytics" element={<AnalyticsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
