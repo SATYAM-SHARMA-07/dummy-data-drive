@@ -1,12 +1,15 @@
-import { Home, Map, BookOpen, MessageSquare, BarChart3, User } from "lucide-react";
+import { Home, Map, BookOpen, Play, CalendarDays, MessageSquare, BarChart3, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { path: "/", icon: Home, label: "Home" },
+  { path: "/roadmap", icon: Map, label: "Roadmap" },
+  { path: "/knowledge", icon: BookOpen, label: "Learn" },
   { path: "/messages", icon: MessageSquare, label: "DMs" },
   { path: "/analytics", icon: BarChart3, label: "Stats" },
-  { path: "/knowledge", icon: BookOpen, label: "Learn" },
+  { path: "/reels", icon: Play, label: "Reels" },
+  { path: "/events", icon: CalendarDays, label: "Events" },
   { path: "/profile", icon: User, label: "Profile" },
 ];
 
