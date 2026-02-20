@@ -12,6 +12,7 @@ import CommentsSheet from "@/components/CommentsSheet";
 import AnimatedPage from "@/components/AnimatedPage";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import FounderDiscovery from "@/components/FounderDiscovery";
 
 interface Pitch {
   id: string;
@@ -253,6 +254,9 @@ const HomePage = () => {
             </div>
           </div>
         )}
+
+        {/* Founder Discovery */}
+        <FounderDiscovery />
 
         {/* Feed */}
         <div className="space-y-3">
